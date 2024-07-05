@@ -15,36 +15,20 @@
 --
 --  3. This notice may not be removed or altered from any source distribution.
 
-baseName = path.getbasename(os.getcwd());
-
-project (workspaceName)
-    kind "ConsoleApp"
+project ("rayTileMapLib")
+    kind "StaticLib"
     location "./"
     targetdir "../bin/%{cfg.buildcfg}"
 
-    filter "configurations:Release"
-        kind "WindowedApp"
-        entrypoint "mainCRTStartup"
-
-    filter "action:vs*"
-        debugdir "$(SolutionDir)"
-
-    filter {"action:vs*", "configurations:Release"}
-            kind "WindowedApp"
-            entrypoint "mainCRTStartup"
-    filter {}
-
     vpaths 
     {
-        ["Header Files/*"] = { "include/**.h",  "include/**.hpp", "src/**.h", "src/**.hpp", "**.h", "**.hpp"},
-        ["Source Files/*"] = {"src/**.c", "src/**.cpp","**.c", "**.cpp"},
+        ["Header Files/*"] = { "include/**.h", "include/**.hpp", "**.h", "**.hpp"},
+        ["Source Files/*"] = { "src/**.cpp", "src/**.c", "**.cpp","**.c"},
     }
-    files {"**.c", "**.cpp", "**.h", "**.hpp"}
+    files {"**.hpp", "**.h", "**.cpp","**.c"}
 
     includedirs { "./" }
-    includedirs { "src" }
-    includedirs { "include" }
-
-    link_raylib()
-
--- To link to a lib use link_to("LIB_FOLDER_NAME")
+    includedirs { "./src" }
+    includedirs { "./include" }
+    includedirs { "./include/external/PUGIXML" }
+    include_raylib()

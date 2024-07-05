@@ -95,19 +95,13 @@ workspace (workspaceName)
 
     targetdir "bin/%{cfg.buildcfg}/"
 
-    if(os.isdir("game")) then
-        startproject(workspaceName)
-    end
+    startproject("example")
 
 cdialect "C99"
 cppdialect "C++17"
 check_raylib();
 
 include ("raylib_premake5.lua")
-
-if(os.isdir("game")) then
-    include ("game")
-end
 
 folders = os.matchdirs("*")
 for _, folderName in ipairs(folders) do
