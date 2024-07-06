@@ -142,7 +142,7 @@ namespace RayTiled
         }
     }
 
-    void DrawVirtualLayer(TileMap& map, VirtualLayer* virtualLayer, Camera2D* camera, Vector2 bounds)
+    void DrawVirtualLayer(TileMap& map, UserLayer* virtualLayer, Camera2D* camera, Vector2 bounds)
     {
         if (virtualLayer && virtualLayer->DrawFunction)
             virtualLayer->DrawFunction(*virtualLayer, camera, bounds);
@@ -161,8 +161,8 @@ namespace RayTiled
                 DrawTileLayer(map, static_cast<TileLayer*>(layer.get()), camera, bounds);
                 break;
 
-            case TileLayerType::Virtual:
-                DrawVirtualLayer(map, static_cast<VirtualLayer*>(layer.get()), camera, bounds);
+            case TileLayerType::User:
+                DrawVirtualLayer(map, static_cast<UserLayer*>(layer.get()), camera, bounds);
                 break;
             }
         }

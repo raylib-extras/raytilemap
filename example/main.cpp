@@ -37,11 +37,48 @@ TileMap Map;
 
 Camera2D ViewCamera = { 0 };
 
+UserLayer* TestUserLayer = nullptr;
+
+TileLayer* ObjectTileLayer = nullptr;
+
+struct PlayerDrawable : TileLayer::Drawable
+{
+	Vector2 Position = { 300,300 };
+
+	float Radius = 8;
+
+	float GetY() override { return Position.y - Radius; }
+};
+
+PlayerDrawable Player;
+
+void DrawUserLayer(UserLayer& layer, Camera2D* camera, Vector2 bounds)
+{
+	DrawText("I AM IN A USER LAYER!!!", 200, 150, 40, DARKPURPLE);
+}
+
+void DrawObjectLayerItem(TileLayer& layer, TileLayer::Drawable& drawable, float startX, float endX)
+{
+	DrawCircleV(Player.Position, Player.Radius, MAGENTA);
+}
+
 void GameInit()
 {
 	ViewCamera.zoom = 1;
 
 	LoadTileMap("resources/sample_map.tmx", Map);
+
+	TestUserLayer = InsertTileMapLayer<UserLayer>(Map, Map.Layers.back()->LayerId);
+	TestUserLayer->DrawFunction = DrawUserLayer;
+
+	auto playerLayer = FindLayer(Map, "Objects");
+	if (playerLayer && playerLayer->Type == TileLayerType::Tile)
+	{
+		ObjectTileLayer = static_cast<TileLayer*>(playerLayer);
+
+		ObjectTileLayer->CustomDrawalbeFunction = DrawObjectLayerItem;
+		ObjectTileLayer->AddDrawable(&Player);
+	}
 }
 
 bool GameUpdate()
@@ -50,6 +87,19 @@ bool GameUpdate()
 	{
 		ViewCamera.target = Vector2Subtract(ViewCamera.target, GetMouseDelta());
 	}
+
+	float speed = 200 * GetFrameTime();
+
+	if (IsKeyDown(KEY_W))
+		Player.Position.y -= speed;
+    if (IsKeyDown(KEY_S))
+        Player.Position.y += speed;
+
+    if (IsKeyDown(KEY_A))
+        Player.Position.x -= speed;
+    if (IsKeyDown(KEY_D))
+        Player.Position.x += speed;
+
 	return true;
 }
 

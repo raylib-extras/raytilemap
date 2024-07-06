@@ -59,7 +59,7 @@ namespace RayTiled
     {
         Tile,					// a layer that has tiles
         Object,					// a layer that has objects (shapes used for collision)
-        Virtual,				// a virtual layer provided by the game to draw dynamic things, such as players, monsters or NPCs
+        User,				// a virtual layer provided by the game to draw dynamic things, such as players, monsters or NPCs
     };
 
     // Common info for all layers
@@ -159,13 +159,14 @@ namespace RayTiled
     };
 
     // a layer provided by the game
-    struct VirtualLayer : public LayerInfo
+    struct UserLayer : public LayerInfo
     {
-        VirtualLayer() { Type = TileLayerType::Virtual; }
+        UserLayer() { Type = TileLayerType::User; }
+        void* UserData = nullptr;
 
         // callback used to draw custom items
-        using VirtualLayerDrawFunction = std::function<void(VirtualLayer& layer, Camera2D* camera, Vector2 bounds)>;
-        VirtualLayerDrawFunction DrawFunction;
+        using UserLayerDrawFunction = std::function<void(UserLayer& layer, Camera2D* camera, Vector2 bounds)>;
+        UserLayerDrawFunction DrawFunction;
     };
 
     // the full tilemap
