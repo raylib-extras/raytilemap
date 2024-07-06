@@ -4,6 +4,37 @@ A simple library to read and draw tilemaps from common tilemap editors, such as 
 ## Work In Progress
 Currenlty supports basic orthographic TMX files that are not compressed.
 
+### TXM export settings
+Be sure to save your TMX as Base64Uncompressed or CSV
+
+# API
+Main API is in ray_tilemap.h
+
+Create a TileMap variable for your game to use.
+Call LoadTileMap with the TMX file path and pass in your map.
+
+Draw the tilemap with DrawTileMap, and pass in an optional camera and view bounds.
+
+if you want to insert your own drawing code between two layers, insert a user/virtual layer with InsertTileMapLayer<VirtualLayer>
+
+The virtual layer has a callback that you can install that will be called when the layer should be drawn.
+
+# Building
+Add the following cpp files to your build (or make a lib out of them)
+
+ray_tilemap.cpp
+ray_tilemap_drawing.cpp
+ray_tilemap_tmx.cpp
+include/external/PUGIXML/pugixml.cpp
+
+# TODO
+* Layer Drawables
+* Object Layers
+* Collision API
+* Draw Order
+* Tilemap Compression
+* Isometric Support
+
 # License
 Copyright (c) 2020-2024 Jeffery Myers
 
