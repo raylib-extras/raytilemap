@@ -95,14 +95,36 @@ namespace RayTiled
         Vector2 TileSize = { 0 };					// the size of one tile element in the grid
         std::vector<TileInfo> TileData;				// the actual tile instances
 
+        void* UserData = nullptr;
+
         TileLayer() { Type = TileLayerType::Tile; }
 
         const TileInfo* GetTile(int x, int y, Rectangle& screenRect) const;
+
+        // TODO Collisions
 
 //         bool CellHasTile(int x, int y, uint16_t* result = nullptr);
 // 
 //         bool CheckCollisionRectangle(const Rectangle& rect);
 //         bool CheckCollisionCircle(const Vector2& position, float radius);
+
+        // TODO, custom drawable
+
+        struct Drawable
+        {
+            virtual ~Drawable() = default;
+            virtual float GetY() = 0;
+            void* UserData = nullptr;
+        };
+
+        using DawableFunction = std::function<void(TileLayer& layer, Drawable& drawable, float startX, float endX)>;
+
+        DawableFunction CustomDrawalbeFunction = nullptr;
+
+        std::vector<Drawable*> Drawables;
+
+        void AddDrawable(Drawable* item);
+        void RemoveDrawable(Drawable* item);
     };
 
     // callback used for custom layer drawing
@@ -139,17 +161,11 @@ namespace RayTiled
     // a layer provided by the game
     struct VirtualLayer : public LayerInfo
     {
-        VirtualLayer() { Type = TileLayerType::Tile; }
+        VirtualLayer() { Type = TileLayerType::Virtual; }
 
         // callback used to draw custom items
-        using VirtualLayerDrawFunction = std::function<void(float y, void* item, Camera2D* camera, Vector2 bounds)>;
+        using VirtualLayerDrawFunction = std::function<void(VirtualLayer& layer, Camera2D* camera, Vector2 bounds)>;
         VirtualLayerDrawFunction DrawFunction;
-
-        // the list of objects in the layer
-        std::map<float, std::vector<void*>> DrawableObjects;
-
-//         void AddItem(float yValue, void* objectHandle);
-//         void RemoveItem(void* objectHandle);
     };
 
     // the full tilemap
@@ -215,7 +231,11 @@ namespace RayTiled
     /// <param name="map">The map to use</param>
     /// <param name="layerId">the layer ID</param>
     /// <returns>Returns true if the layer was found and removed</returns>
-    bool RemoveVirtualTileMapLayer(TileMap& map, int layerId);
+    bool RemoveTileMapLayer(TileMap& map, int layerId);
+
+
+    LayerInfo* FindLayer(TileMap& map, int layerId);
+    LayerInfo* FindLayer(TileMap& map, const std::string& name);
 
     /// <summary>
     /// Draws all visible layers
@@ -226,6 +246,12 @@ namespace RayTiled
     /// if provided will be used with the camera to limit what is drawn, if not provided the screen size will be used
     /// </param>
     void DrawTileMap(TileMap& map, Camera2D* camera = nullptr, Vector2 bounds = { 0,0 });
+
+
+    // draw stats
+    size_t GetTileDrawStats();
+
+    // TODO, general collision API
 
 }
 

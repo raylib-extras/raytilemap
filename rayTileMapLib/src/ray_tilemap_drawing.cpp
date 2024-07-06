@@ -72,32 +72,98 @@ namespace RayTiled
         return nullptr;
     }
 
+    const TileSheet* LastTileSheet = nullptr;
+
+    static size_t TilesDrawn = 0;
+
+    size_t GetTileDrawStats()
+    {
+        return TilesDrawn;
+    }
+
+    void DrawTileLayer(TileMap& map, TileLayer* tileLayer, Camera2D* camera, Vector2 bounds)
+    {
+        int startX = 0;
+        int startY = 0;
+
+        int endX = int(tileLayer->Bounds.x);
+        int endY = int(tileLayer->Bounds.y);
+
+        int xDirection = 1;
+        int yDirection = 1;
+
+        if (camera)
+        {
+            if (bounds.x <= 0 || bounds.y <= 0)
+            {
+                bounds.x = (float)GetScreenWidth();
+                bounds.y = (float)GetScreenHeight();
+            }
+            Vector2 viewportStart = GetScreenToWorld2D(Vector2Zero(), *camera);
+            Vector2 viewportEnd = GetScreenToWorld2D(bounds, *camera);
+
+            startX = std::max(startX, int(viewportStart.x / tileLayer->TileSize.x) - 1);
+            startY = std::max(startY, int(viewportStart.y / tileLayer->TileSize.y) - 1);
+
+            endX = std::min(endX, int(viewportEnd.x / tileLayer->TileSize.x) + 2);
+            endY = std::min(endY, int(viewportEnd.y / tileLayer->TileSize.y) + 2);
+        }
+
+        // Handle the direction stuff from the map file
+
+        for (int y = startY; y != endY; y+= yDirection)
+        {
+            for (int x = startX; x != endX; x += xDirection)
+            {
+                Rectangle destRect;
+                const auto* tile = tileLayer->GetTile(x, y, destRect);
+                if (tile == nullptr || tile->TileIndex == 0)
+                    continue;
+
+                if (LastTileSheet == nullptr || !LastTileSheet->HasId(tile->TileIndex))
+                    LastTileSheet = FindSheetForId(tile->TileIndex, map);
+
+                if (!LastTileSheet)
+                    continue;
+
+                LastTileSheet->DrawTile(tile->TileIndex, destRect, tile->TileFlags, WHITE);
+                TilesDrawn++;
+            }
+            
+            if (tileLayer->CustomDrawalbeFunction)
+            {
+                for (auto& drawable : tileLayer->Drawables)
+                {
+                    float yPos = drawable->GetY();
+                    if (yPos > y * tileLayer->TileSize.y && yPos <= (y + 1) * tileLayer->TileSize.y)
+                        tileLayer->CustomDrawalbeFunction(*tileLayer, *drawable, startX * tileLayer->TileSize.x, endX * tileLayer->TileSize.x);
+                }
+            }
+        }
+    }
+
+    void DrawVirtualLayer(TileMap& map, VirtualLayer* virtualLayer, Camera2D* camera, Vector2 bounds)
+    {
+        if (virtualLayer && virtualLayer->DrawFunction)
+            virtualLayer->DrawFunction(*virtualLayer, camera, bounds);
+    }
+
     void DrawTileMap(TileMap& map, Camera2D* camera, Vector2 bounds)
     {
-        const TileSheet* lastTileSheet = &map.TileSheets.begin()->second;
-        for (const auto& layer : map.Layers)
+        TilesDrawn = 0;
+        for (auto& layer : map.Layers)
         {
-            if (layer->Type == TileLayerType::Tile)
+            switch (layer->Type)
             {
-                const TileLayer* tileLayer = static_cast<TileLayer*>(layer.get());
-                for (int y = 0; y < tileLayer->Bounds.y; y++)
-                {
-                    for (int x = 0; x < tileLayer->Bounds.x; x++)
-                    {
-                        Rectangle destRect;
-                        const auto* tile = tileLayer->GetTile(x, y, destRect);
-                        if (tile == nullptr || tile->TileIndex == 0)
-                            continue;
+            default:
+                break;
+            case TileLayerType::Tile:
+                DrawTileLayer(map, static_cast<TileLayer*>(layer.get()), camera, bounds);
+                break;
 
-                        if (lastTileSheet == nullptr || !lastTileSheet->HasId(tile->TileIndex))
-                            lastTileSheet = FindSheetForId(tile->TileIndex, map);
-
-                        if (!lastTileSheet)
-                            continue;
-
-                        lastTileSheet->DrawTile(tile->TileIndex, destRect, tile->TileFlags, WHITE);
-                    }
-                }
+            case TileLayerType::Virtual:
+                DrawVirtualLayer(map, static_cast<VirtualLayer*>(layer.get()), camera, bounds);
+                break;
             }
         }
     }

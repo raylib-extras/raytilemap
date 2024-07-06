@@ -29,6 +29,8 @@
 #include "ray_tilemap.h"
 #include "external/PUGIXML/pugixml.hpp"
 
+#include <algorithm>
+
 namespace RayTiled
 {
     static LoadTextureFunction LoadTextureFunc = nullptr;
@@ -85,5 +87,111 @@ namespace RayTiled
             UnloadFileText(data);
         }
         return result;
+    }
+
+    void UnloadTileMap(TileMap& map, bool releaseTextures)
+    {
+        map.Layers.clear();
+        if (releaseTextures)
+        {
+            for (auto& [id, sheet] : map.TileSheets)
+            {
+                UnloadTexture(sheet.Texture);
+            }
+        }
+        map.TileSheets.clear();
+    }
+
+    LayerInfo* InsertTileMapLayer(std::unique_ptr<LayerInfo> layer, TileMap& map, int beforeId)
+    {
+        LayerInfo* layerPtr = layer.get();
+
+        auto itr = map.Layers.begin();
+        while (itr != map.Layers.end())
+        {
+            if (itr->get()->LayerId == beforeId)
+            {
+                if (itr == map.Layers.begin())
+                {
+                    map.Layers.push_back(std::move(layer));
+                }
+                else
+                {
+                    map.Layers.insert(itr, std::move(layer));
+                }
+                return layerPtr;
+            }
+            itr++;
+        }
+
+        map.Layers.push_back(std::move(layer));
+        return layerPtr;
+    }
+
+    bool RemoveTileMapLayer(TileMap& map, int layerId)
+    {
+        auto itr = map.Layers.begin();
+        while (itr != map.Layers.end())
+        {
+            if (itr->get()->LayerId == layerId)
+            {
+                map.Layers.erase(itr);
+                return true;
+            }
+            itr++;
+        }
+
+        return false;
+    }
+
+    LayerInfo* FindLayer(TileMap& map, int layerId)
+    {
+        auto itr = map.Layers.begin();
+        while (itr != map.Layers.end())
+        {
+            if (itr->get()->LayerId == layerId)
+            {
+                return itr->get();
+            }
+            itr++;
+        }
+
+        return nullptr;
+    }
+
+    LayerInfo* FindLayer(TileMap& map, const std::string& name)
+    {
+        auto itr = map.Layers.begin();
+        while (itr != map.Layers.end())
+        {
+            if (itr->get()->Name == name)
+            {
+                return itr->get();
+            }
+            itr++;
+        }
+
+        return nullptr;
+    }
+
+    void TileLayer::AddDrawable(Drawable* item)
+    {
+        Drawables.push_back(item);
+    }
+
+    void TileLayer::RemoveDrawable(Drawable* item)
+    {
+        auto itr = Drawables.begin();
+        while (itr != Drawables.end())
+        {
+            if (*itr == item)
+            {
+                itr = Drawables.erase(itr);
+            }
+            else
+            {
+                itr++;
+            }
+        }
     }
 }

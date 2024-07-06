@@ -60,14 +60,21 @@ void GameDraw()
 
 	BeginMode2D(ViewCamera);
 	DrawTileMap(Map, &ViewCamera);
+
+	DrawLine(0, 0, 100, 0, RED);
+    DrawLine(0, 0, 0, 100, BLUE);
+
 	EndMode2D();
+
+	DrawFPS(5, 5);
+	DrawText(TextFormat("Tiles Drawn: %d", (int)GetTileDrawStats()), 5, 25, 20, WHITE);
 
 	EndDrawing();
 }
 
 int main()
 {
-	SetConfigFlags(FLAG_VSYNC_HINT);
+	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE);
 	InitWindow(1280, 800, "Example");
 	SetTargetFPS(144);
 
