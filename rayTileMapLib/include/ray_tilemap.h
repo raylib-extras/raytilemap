@@ -103,7 +103,7 @@ namespace RayTiled
 
         // TODO Collisions
 
-//         bool CellHasTile(int x, int y, uint16_t* result = nullptr);
+        bool CellHasTile(int x, int y, uint16_t* result = nullptr);
 // 
 //         bool CheckCollisionRectangle(const Rectangle& rect);
 //         bool CheckCollisionCircle(const Vector2& position, float radius);

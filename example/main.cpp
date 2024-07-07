@@ -62,6 +62,30 @@ void DrawObjectLayerItem(TileLayer& layer, TileLayer::Drawable& drawable, float 
 	DrawCircleV(Player.Position, Player.Radius, MAGENTA);
 }
 
+void DrawCollisionLayer(ObjectLayer& layer, Camera2D* camera, Vector2 bounds)
+{
+	for (auto& object : layer.Objets)
+	{
+		switch (object->Type)
+		{
+		case ObjectLayer::ObjectType::Generic:
+			DrawRectangleRec(object->Bounds, ColorAlpha(BLUE, 0.25f));
+			break;
+
+		case ObjectLayer::ObjectType::Point:
+			DrawCircleV(Vector2{ object->Bounds.x, object->Bounds.y }, 8, GRAY);
+			break;
+
+		case ObjectLayer::ObjectType::Text:
+		{
+			auto text = static_cast<ObjectLayer::TextObject*>(object.get());
+			DrawText(text->Text.c_str(), object->Bounds.x, object->Bounds.y, text->FontSize, WHITE);
+		}
+			break;
+		}
+	}
+}
+
 void GameInit()
 {
 	ViewCamera.zoom = 1;
@@ -78,6 +102,13 @@ void GameInit()
 
 		ObjectTileLayer->CustomDrawalbeFunction = DrawObjectLayerItem;
 		ObjectTileLayer->AddDrawable(&Player);
+	}
+
+	auto collisionlayer = FindLayer(Map, "CollisionObjects");
+	if (collisionlayer && collisionlayer->Type == TileLayerType::Object)
+	{
+		static_cast<ObjectLayer*>(collisionlayer)->DrawFunc = DrawCollisionLayer;
+		static_cast<ObjectLayer*>(collisionlayer)->CheckForCollisions = true;
 	}
 }
 

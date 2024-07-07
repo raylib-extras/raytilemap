@@ -61,6 +61,17 @@ namespace RayTiled
         return &TileData[y * int(Bounds.x) + x];
     }
 
+    bool TileLayer::CellHasTile(int x, int y, uint16_t* result)
+    {
+        if (x > Bounds.x || x < 0 || y > Bounds.y || y < 0)
+            return false;
+
+        if (result)
+            *result = TileData[y * int(Bounds.x) + x].TileIndex;
+
+        return TileData[y * int(Bounds.x) + x].TileIndex > 0;
+    }
+
     const TileSheet* FindSheetForId(uint16_t id, const TileMap& map)
     {
         for (const auto& [startId, sheet] : map.TileSheets)
@@ -160,7 +171,13 @@ namespace RayTiled
             case TileLayerType::Tile:
                 DrawTileLayer(map, static_cast<TileLayer*>(layer.get()), camera, bounds);
                 break;
-
+            case TileLayerType::Object:
+            {
+                auto objectLayer = static_cast<ObjectLayer*>(layer.get());
+                if (objectLayer && objectLayer->DrawFunc)
+                    objectLayer->DrawFunc(*objectLayer, camera, bounds);
+            }
+            break;
             case TileLayerType::User:
                 DrawVirtualLayer(map, static_cast<UserLayer*>(layer.get()), camera, bounds);
                 break;
