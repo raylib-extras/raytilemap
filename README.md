@@ -19,6 +19,8 @@ if you want to insert your own drawing code between two layers, insert a user/vi
 
 The virtual layer has a callback that you can install that will be called when the layer should be drawn.
 
+You can add drawables to any tile layer that will be drawn on each Y row is processed.
+
 # Building
 Add the following cpp files to your build (or make a lib out of them)
 
@@ -28,8 +30,8 @@ ray_tilemap_tmx.cpp
 include/external/PUGIXML/pugixml.cpp
 
 # TODO
-* Layer Drawables
-* Object Layers
+* Layer Drawables (Alpha)
+* Object Layers (Alpha)
 * Collision API
 * Draw Order
 * Tilemap Compression
