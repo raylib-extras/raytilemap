@@ -172,84 +172,79 @@ namespace RayTiled
 
     bool ReadObjectsLayer(pugi::xml_node& root, TileMap& map)
     {
-//         std::shared_ptr<ObjectLayer> layerPtr = std::make_shared<ObjectLayer>();
-// 
-//         ObjectLayer& layer = *layerPtr;
-//         int id = root.attribute("id").as_int();
-// 
-//         layer.Id = id;
-//         layer.Name = root.attribute("name").as_string();
-// 
-//         for (pugi::xml_node child : root.children())
-//         {
-//             std::string n = child.name();
-//             if (n == "object")
-//             {
-//                 int id = child.attribute("id").as_int();
-// 
-//                 std::shared_ptr<TileObject> object = nullptr;
-// 
-//                 if (!child.child("polygon").empty() || !child.child("polyline").empty())
-//                 {
-//                     auto poly = std::make_shared<TilePolygonObject>();
-// 
-//                     auto points = split(child.child("polygon").attribute("points").as_string(), ' ');
-//                     for (auto point : points)
-//                     {
-//                         auto coords = split(point.c_str(), ',');
-//                         if (coords.size() == 2)
-//                         {
-//                             Vector2 p = { (float)atof(coords[0].c_str()), (float)atof(coords[1].c_str()) };
-//                             poly->Points.emplace_back(p);
-//                         }
-//                     }
-//                     object = poly;
-// 
-//                 }
-//                 else if (!child.child("text").empty())
-//                 {
-//                     auto text = std::make_shared<TileTextObject>();
-//                     auto textEntity = child.child("text");
-// 
-//                     text->Text = textEntity.child_value();
-//                     if (!textEntity.attribute("pixelsize").empty())
-//                         text->FontSize = textEntity.attribute("pixelsize").as_int();
-// 
-//                     // TODO, add the rest of the text attributes
-// 
-//                     object = text;
-//                 }
-//                 else
-//                 {
-//                     object = std::make_shared<TileObject>();
-//                 }
-// 
-//                 if (!child.child("polygon").empty())
-//                     object->SubType = TileObject::SubTypes::Polygon;
-//                 else if (!child.child("polyline").empty())
-//                     object->SubType = TileObject::SubTypes::Polyline;
-//                 else if (!child.child("ellipse").empty())
-//                     object->SubType = TileObject::SubTypes::Ellipse;
-//                 else if (!child.child("text").empty())
-//                     object->SubType = TileObject::SubTypes::Text;
-//                 else if (!child.child("point").empty())
-//                     object->SubType = TileObject::SubTypes::Point;
-//                 else
-//                     object->SubType = TileObject::SubTypes::None;
-// 
-//                 object->Name = child.attribute("name").as_string();
-//                 object->Type = child.attribute("type").as_string();
-//                 object->Template = child.attribute("template").as_string();
-// 
-//                 object->Bounds.x = child.attribute("x").as_float();
-//                 object->Bounds.y = child.attribute("y").as_float();
-//                 object->Bounds.width = child.attribute("width").as_float();
-//                 object->Bounds.height = child.attribute("height").as_float();
-//                 object->Rotation = child.attribute("rotation").as_float();
-//                 object->Visible = child.attribute("visible").empty() || child.attribute("visible").as_int() != 0;
-// 
-//                 object->GridTile = child.attribute("gid").as_int();
-// 
+        std::unique_ptr<ObjectLayer> layerPtr = std::make_unique<ObjectLayer>();
+
+        ObjectLayer& layer = *layerPtr.get();
+        int id = root.attribute("id").as_int();
+
+        layer.LayerId = id;
+        layer.Name = root.attribute("name").as_string();
+
+        for (pugi::xml_node child : root.children())
+        {
+            std::string n = child.name();
+            if (n == "object")
+            {
+                int id = child.attribute("id").as_int();
+
+                ObjectLayer::Object* object = nullptr;
+
+                if (!child.child("polygon").empty() || !child.child("polyline").empty())
+                {
+                    auto poly = std::make_unique<ObjectLayer::PolygonObject>();
+
+                    auto points = split(child.child("polygon").attribute("points").as_string(), ' ');
+                    for (auto point : points)
+                    {
+                        auto coords = split(point.c_str(), ',');
+                        if (coords.size() == 2)
+                        {
+                            Vector2 p = { (float)atof(coords[0].c_str()), (float)atof(coords[1].c_str()) };
+                            poly->Points.emplace_back(p);
+                        }
+                    }
+                    object = poly.get();
+                    layer.Objets.emplace_back(std::move(poly));
+                }
+                else if (!child.child("text").empty())
+                {
+                    auto text = std::make_unique<ObjectLayer::TextObject>();
+                    auto textEntity = child.child("text");
+
+                    text->Text = textEntity.child_value();
+                    if (!textEntity.attribute("pixelsize").empty())
+                        text->FontSize = textEntity.attribute("pixelsize").as_float();
+
+                    // TODO, add the rest of the text attributes
+                    object = text.get();
+                    layer.Objets.emplace_back(std::move(text));
+                }
+                else
+                {
+                    auto obj = std::make_unique<ObjectLayer::Object>();
+                    object = obj.get();
+                    layer.Objets.emplace_back(std::move(obj));
+                }
+
+                if (!child.child("ellipse").empty())
+                    object->Type = ObjectLayer::ObjectType::Ellipse;
+                else if (!child.child("point").empty())
+                    object->Type = ObjectLayer::ObjectType::Point;
+
+                object->Name = child.attribute("name").as_string();
+                object->ClassName = child.attribute("type").as_string();
+                object->TemplateName = child.attribute("template").as_string();
+                object->Id = child.attribute("id").as_int();
+
+                object->Bounds.x = child.attribute("x").as_float();
+                object->Bounds.y = child.attribute("y").as_float();
+                object->Bounds.width = child.attribute("width").as_float();
+                object->Bounds.height = child.attribute("height").as_float();
+                object->Rotation = child.attribute("rotation").as_float();
+                object->Visible = child.attribute("visible").empty() || child.attribute("visible").as_int() != 0;
+
+                object->TileID = child.attribute("gid").as_int();
+
 //                 auto properties = child.child("properties");
 //                 if (!properties.empty())
 //                 {
@@ -263,14 +258,12 @@ namespace RayTiled
 //                         object->Properties.emplace_back(std::move(propertyRectord));
 //                     }
 //                 }
-// 
-//                 layer.Objects.emplace_back(object);
-//             }
-//         }
-// 
-//         int index = int(map.Layers.size());
-//         map.Layers[index] = layerPtr;
-//         map.ObjectLayers[index] = layerPtr.get();
+
+            }
+        }
+
+        int index = int(map.Layers.size());
+        map.Layers.emplace_back(std::move(layerPtr));
         return true;
     }
 
@@ -334,18 +327,18 @@ namespace RayTiled
             }
             else if (childName == "properties")
             {
-//                 if (!child.empty())
-//                 {
-//                     for (auto prop : child.children())
-//                     {
-//                         Property propertyRectord;
-//                         propertyRectord.Name = prop.attribute("name").as_string();
-//                         propertyRectord.Type = prop.attribute("type").as_string();
-//                         propertyRectord.Value = prop.attribute("value").as_string();
-// 
-//                         map.Properties.emplace_back(std::move(propertyRectord));
-//                     }
-//                 }
+                //                 if (!child.empty())
+                //                 {
+                //                     for (auto prop : child.children())
+                //                     {
+                //                         Property propertyRectord;
+                //                         propertyRectord.Name = prop.attribute("name").as_string();
+                //                         propertyRectord.Type = prop.attribute("type").as_string();
+                //                         propertyRectord.Value = prop.attribute("value").as_string();
+                // 
+                //                         map.Properties.emplace_back(std::move(propertyRectord));
+                //                     }
+                //                 }
             }
             else if (childName == "objectgroup")
             {
@@ -411,7 +404,7 @@ namespace RayTiled
                     uint32_t header = *(uint32_t*)(contents.data());
 
                     uint8_t* data = DecodeDataBase64((const unsigned char*)contents.c_str() + 4, &size);
-                   
+
                     uint32_t* decompData = nullptr;
                     int decompSize = 0;
 
@@ -438,7 +431,7 @@ namespace RayTiled
                         decompData = (uint32_t*)data;
                         decompSize = size / 4;
                     }
-             
+
                     if (decompData && decompSize)
                     {
                         for (int index = 0; index < decompSize; index++)

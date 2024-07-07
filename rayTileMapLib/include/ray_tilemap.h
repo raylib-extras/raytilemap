@@ -141,8 +141,8 @@ namespace RayTiled
         // Object data
         enum class ObjectType
         {
-            Rectangle,
-            Circle,
+            Generic,
+            Ellipse,
             Point,
             Polygon,
             Text,
@@ -150,7 +150,29 @@ namespace RayTiled
 
         struct Object
         {
-            ObjectType Type = ObjectType::Rectangle;
+            int32_t Id = 0;
+            ObjectType Type = ObjectType::Generic;
+            Rectangle Bounds = { 0 };
+            float Rotation = 0;
+            bool Visible = false;
+            int32_t TileID = 0;
+
+            std::string Name;
+            std::string ClassName;
+            std::string TemplateName;
+        };
+
+        struct PolygonObject : public Object
+        {
+            std::vector<Vector2> Points;
+            PolygonObject() { Type = ObjectType::Polygon; }
+        };
+
+        struct TextObject : public Object
+        {
+            std::string Text;
+            float FontSize = 10;
+            TextObject() { Type = ObjectType::Text; }
         };
 
         std::vector<std::unique_ptr<Object>> Objets;
