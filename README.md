@@ -30,12 +30,10 @@ ray_tilemap_tmx.cpp
 include/external/PUGIXML/pugixml.cpp
 
 # TODO
-* Layer Drawables (Alpha)
-* Object Layers (Alpha)
-* Collision API
 * Draw Order
 * Tilemap Compression
 * Isometric Support
+* Properties
 
 # License
 Copyright (c) 2020-2024 Jeffery Myers
