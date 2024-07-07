@@ -119,17 +119,29 @@ bool GameUpdate()
 		ViewCamera.target = Vector2Subtract(ViewCamera.target, GetMouseDelta());
 	}
 
+	Vector2 newPos = Player.Position;
+
+
 	float speed = 200 * GetFrameTime();
 
 	if (IsKeyDown(KEY_W))
-		Player.Position.y -= speed;
+		newPos.y -= speed;
     if (IsKeyDown(KEY_S))
-        Player.Position.y += speed;
+		newPos.y += speed;
 
     if (IsKeyDown(KEY_A))
-        Player.Position.x -= speed;
+		newPos.x -= speed;
     if (IsKeyDown(KEY_D))
-        Player.Position.x += speed;
+		newPos.x += speed;
+
+
+	Rectangle newRect = { newPos.x - Player.Radius, newPos.y - Player.Radius, Player.Radius * 2, Player.Radius * 2 };
+
+	std::vector<CollisionRecord> collisions;
+	if (GetCollisions(Map, newRect, collisions) == 0)
+	{
+		Player.Position = newPos;
+	}
 
 	return true;
 }

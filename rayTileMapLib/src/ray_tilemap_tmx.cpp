@@ -245,19 +245,21 @@ namespace RayTiled
 
                 object->TileID = child.attribute("gid").as_int();
 
-//                 auto properties = child.child("properties");
-//                 if (!properties.empty())
-//                 {
-//                     for (auto prop : properties.children())
-//                     {
-//                         Property propertyRectord;
-//                         propertyRectord.Name = prop.attribute("name").as_string();
-//                         propertyRectord.Type = prop.attribute("type").as_string();
-//                         propertyRectord.Value = prop.attribute("value").as_string();
-// 
-//                         object->Properties.emplace_back(std::move(propertyRectord));
-//                     }
-//                 }
+                auto properties = child.child("properties");
+                if (!properties.empty())
+                {
+                    for (auto prop : properties.children())
+                    {
+                        /*
+                        Property propertyRectord;
+                        propertyRectord.Name = prop.attribute("name").as_string();
+                        propertyRectord.Type = prop.attribute("type").as_string();
+                        propertyRectord.Value = prop.attribute("value").as_string();
+
+                        object->Properties.emplace_back(std::move(propertyRectord));
+                        */
+                    }
+                }
 
             }
         }
@@ -282,7 +284,6 @@ namespace RayTiled
 
         val &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
 
-        // subtract 1 from the index, since our sprites start at 0 not 1
         tile.TileIndex = static_cast<uint16_t>(val);
     }
 
@@ -327,18 +328,20 @@ namespace RayTiled
             }
             else if (childName == "properties")
             {
-                //                 if (!child.empty())
-                //                 {
-                //                     for (auto prop : child.children())
-                //                     {
-                //                         Property propertyRectord;
-                //                         propertyRectord.Name = prop.attribute("name").as_string();
-                //                         propertyRectord.Type = prop.attribute("type").as_string();
-                //                         propertyRectord.Value = prop.attribute("value").as_string();
-                // 
-                //                         map.Properties.emplace_back(std::move(propertyRectord));
-                //                     }
-                //                 }
+                if (!child.empty())
+                {
+                    for (auto prop : child.children())
+                    {
+                        /*
+                        Property propertyRectord;
+                        propertyRectord.Name = prop.attribute("name").as_string();
+                        propertyRectord.Type = prop.attribute("type").as_string();
+                        propertyRectord.Value = prop.attribute("value").as_string();
+
+                        map.Properties.emplace_back(std::move(propertyRectord));
+                        */
+                    }
+                }
             }
             else if (childName == "objectgroup")
             {

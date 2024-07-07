@@ -256,7 +256,6 @@ namespace RayTiled
     /// <returns>Returns true if the layer was found and removed</returns>
     bool RemoveTileMapLayer(TileMap& map, int layerId);
 
-
     LayerInfo* FindLayer(TileMap& map, int layerId);
     LayerInfo* FindLayer(TileMap& map, const std::string& name);
 
@@ -270,11 +269,17 @@ namespace RayTiled
     /// </param>
     void DrawTileMap(TileMap& map, Camera2D* camera = nullptr, Vector2 bounds = { 0,0 });
 
-
     // draw stats
     size_t GetTileDrawStats();
 
     // TODO, general collision API
+    struct CollisionRecord
+    {
+        TileLayerType Type = TileLayerType::Tile;
+        Rectangle Bounds = { 0,0,0,0 };
+        int32_t ItemId = 0;
+    };
 
+    size_t GetCollisions(TileMap& map, Rectangle rect, std::vector<CollisionRecord>& results);
 }
 

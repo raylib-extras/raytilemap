@@ -174,6 +174,63 @@ namespace RayTiled
         return nullptr;
     }
 
+    size_t GetCollisions(TileMap& map, Rectangle rect, std::vector<CollisionRecord>& results)
+    {
+        results.clear();
+
+        for (auto& layer : map.Layers)
+        {
+            if (!layer->CheckForCollisions)
+                continue;
+
+            if (layer->Type == TileLayerType::Tile)
+            {
+                TileLayer* tileLayer = static_cast<TileLayer*>(layer.get());
+
+                int x = int(rect.x / tileLayer->TileSize.x);
+                int y = int(rect.y / tileLayer->TileSize.y);
+
+                int w = int((rect.x + rect.width) / tileLayer->TileSize.x);
+                int h = int((rect.y + rect.height) / tileLayer->TileSize.y);
+
+                for (; y <= h; y++)
+                {
+                    for (int i = x; i <= w; i++)
+                    {
+                        uint16_t tile = 0;
+                        if (tileLayer->CellHasTile(i, y, &tile))
+                        {
+                            results.emplace_back();
+                            results.back().Type = TileLayerType::Tile;
+                            results.back().Bounds = { i * tileLayer->TileSize.x , y * tileLayer->TileSize.y, tileLayer->TileSize.x , tileLayer->TileSize.y };
+                            results.back().ItemId = tile;
+                        }
+                    }
+                }
+            }
+            else if (layer->Type == TileLayerType::Object)
+            {
+                ObjectLayer* objectLayer = static_cast<ObjectLayer*>(layer.get());
+
+                for (auto& object : objectLayer->Objets)
+                {
+                    if (object->Type == ObjectLayer::ObjectType::Generic)
+                    {
+                        if (CheckCollisionRecs(rect, object->Bounds))
+                        {
+                            results.emplace_back();
+                            results.back().Type = TileLayerType::Object;
+                            results.back().Bounds = object->Bounds;
+                            results.back().ItemId = object->Id;
+                        }
+                    }
+                }
+            }
+        }
+
+        return !results.empty();
+    }
+
     void TileLayer::AddDrawable(Drawable* item)
     {
         Drawables.push_back(item);
