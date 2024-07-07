@@ -28,6 +28,7 @@
 
 #include "ray_tilemap.h"
 #include "external/PUGIXML/pugixml.hpp"
+#include "external/sinfl.h"
 
 namespace RayTiled
 {
@@ -411,11 +412,13 @@ namespace RayTiled
                     uint32_t* decompData = nullptr;
                     int decompSize = 0;
 
-                    if (compression == "zlib")
+                    if (compression == "zlib" || compression == "zstd")
                     {
-                        // TODO, decompress this
+                        decompData = (uint32_t*)MemAlloc(4 * width * height);
+                        decompSize = width * height;
+                        zsinflate(decompData, decompSize*4, data, size);
+
                         MemFree(data);
-                        continue;
                     }
                     else if (compression == "gzip")
                     {
