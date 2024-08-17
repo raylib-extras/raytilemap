@@ -48,30 +48,6 @@ namespace RayTiled
         DrawTexturePro(Texture, sourceRect, destinationRectangle, Vector2Zero(), rotation, tint);
     }
 
-    const TileInfo* TileLayer::GetTile(int x, int y, Rectangle& screenRect) const
-    {
-        if (x > Bounds.x || x < 0 || y > Bounds.y || y < 0)
-            return nullptr;
-
-        screenRect.x = x * TileSize.x;
-        screenRect.y = y * TileSize.y;
-        screenRect.width = TileSize.x;
-        screenRect.height = TileSize.y;
-
-        return &TileData[y * int(Bounds.x) + x];
-    }
-
-    bool TileLayer::CellHasTile(int x, int y, uint16_t* result)
-    {
-        if (x > Bounds.x || x < 0 || y > Bounds.y || y < 0)
-            return false;
-
-        if (result)
-            *result = TileData[y * int(Bounds.x) + x].TileIndex;
-
-        return TileData[y * int(Bounds.x) + x].TileIndex > 0;
-    }
-
     const TileSheet* FindSheetForId(uint16_t id, const TileMap& map)
     {
         for (const auto& [startId, sheet] : map.TileSheets)
