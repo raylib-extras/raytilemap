@@ -412,7 +412,7 @@ namespace RayTiled
                     uint32_t* decompData = nullptr;
                     int decompSize = 0;
 
-                    if (compression == "zlib" || compression == "zstd")
+                    if (compression == "zlib")
                     {
                         decompData = (uint32_t*)MemAlloc(4 * width * height);
                         decompSize = width * height;

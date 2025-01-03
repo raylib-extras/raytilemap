@@ -34,6 +34,7 @@ include/external/PUGIXML/pugixml.cpp
 * Tilemap Compression
 * Isometric Support
 * Properties
+* Static Layers with RenderTexture Cache
 
 # License
 Copyright (c) 2020-2024 Jeffery Myers

@@ -59,8 +59,6 @@ namespace RayTiled
         return nullptr;
     }
 
-    const TileSheet* LastTileSheet = nullptr;
-
     static size_t TilesDrawn = 0;
 
     size_t GetTileDrawStats()
@@ -107,13 +105,13 @@ namespace RayTiled
                 if (tile == nullptr || tile->TileIndex == 0)
                     continue;
 
-                if (LastTileSheet == nullptr || !LastTileSheet->HasId(tile->TileIndex))
-                    LastTileSheet = FindSheetForId(tile->TileIndex, map);
+                if (map.LastTileSheet == nullptr || !map.LastTileSheet->HasId(tile->TileIndex))
+                    map.LastTileSheet = FindSheetForId(tile->TileIndex, map);
 
-                if (!LastTileSheet)
+                if (!map.LastTileSheet)
                     continue;
 
-                LastTileSheet->DrawTile(tile->TileIndex, destRect, tile->TileFlags, WHITE);
+                map.LastTileSheet->DrawTile(tile->TileIndex, destRect, tile->TileFlags, WHITE);
                 TilesDrawn++;
             }
             

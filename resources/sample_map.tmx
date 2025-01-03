@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" infinite="0" nextlayerid="9" nextobjectid="17">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="17">
  <tileset firstgid="1" name="Roguelike" tilewidth="16" tileheight="16" spacing="1" tilecount="1767" columns="57">
   <image source="Spritesheet/roguelikeSheet_transparent.png" width="968" height="526"/>
  </tileset>
@@ -48,7 +48,7 @@
    <ellipse/>
   </object>
   <object id="14" name="Water" type="water-trigger" x="592" y="369.333">
-   <polygon points="0,0 3.33333,-29.3333 82,-30.6667 91.3333,-18.6667 91.3333,82.6667 48,92 44.6667,132.667 28.6667,142.667 27.3333,168.667 -13.3333,172 -34,138 -76,138.667 -77.3333,74.6667 -65.3333,63.3333 -61.3333,9.33333 -52.6667,2"/>
+   <polygon points="0,0 3.33333,-29.3333 82,-30.6667 91.3333,-18.6667 90.6666,92.6667 47.3333,92 46,136 28.6667,142.667 27.3333,168.667 -13.3333,172 -34,138 -76,138.667 -78,73.3334 -65.3333,63.3333 -61.3333,9.33333 -52.6667,2"/>
   </object>
   <object id="15" name="Spawn1" type="Spawn" x="438.667" y="310.667">
    <point/>
@@ -57,4 +57,7 @@
    <text wrap="1">Debug Text</text>
   </object>
  </objectgroup>
+ <imagelayer id="9" name="ImageLayer" offsetx="300" offsety="700">
+  <image source="Spritesheet/raylib_64x64.png" width="64" height="64"/>
+ </imagelayer>
 </map>

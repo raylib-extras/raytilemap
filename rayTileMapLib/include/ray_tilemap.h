@@ -196,6 +196,11 @@ namespace RayTiled
     {
         std::map<uint16_t, TileSheet> TileSheets;		// the sheets used by this map
         std::vector<std::unique_ptr<LayerInfo>> Layers;	// the layers stored in draw order (back to front)
+
+        Vector2 TileRenderOrder = { 1,1 };
+
+        // used as a cache
+        const TileSheet* LastTileSheet = nullptr;
     };
 
     /// <summary>

@@ -79,7 +79,7 @@ void DrawCollisionLayer(ObjectLayer& layer, Camera2D* camera, Vector2 bounds)
 		case ObjectLayer::ObjectType::Text:
 		{
 			auto text = static_cast<ObjectLayer::TextObject*>(object.get());
-			DrawText(text->Text.c_str(), object->Bounds.x, object->Bounds.y, text->FontSize, WHITE);
+			DrawText(text->Text.c_str(), int(object->Bounds.x), int(object->Bounds.y), int(text->FontSize), WHITE);
 		}
 			break;
 		}
