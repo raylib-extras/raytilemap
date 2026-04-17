@@ -1,19 +1,4 @@
--- Copyright (c) 2020-2024 Jeffery Myers
---
---This software is provided "as-is", without any express or implied warranty. In no event 
---will the authors be held liable for any damages arising from the use of this software.
-
---Permission is granted to anyone to use this software for any purpose, including commercial 
---applications, and to alter it and redistribute it freely, subject to the following restrictions:
-
---  1. The origin of this software must not be misrepresented; you must not claim that you 
---  wrote the original software. If you use this software in a product, an acknowledgment 
---  in the product documentation would be appreciated but is not required.
---
---  2. Altered source versions must be plainly marked as such, and must not be misrepresented
---  as being the original software.
---
---  3. This notice may not be removed or altered from any source distribution.
+-- Game Premake by Jeffery Myers is marked CC0 1.0. To view a copy of this mark, visit https://creativecommons.org/publicdomain/zero/1.0/
 
 newoption
 {
@@ -31,6 +16,31 @@ newoption
     default = "opengl33"
 }
 
+newoption
+{
+    trigger = "backend",
+    value = "BACKEND",
+    description = "backend to use",
+    allowed = {
+        { "GLFW", "GLFW"},
+        { "SDL2", "SDL2"},
+        { "SDL3", "SDL3"},
+        { "RLFW", "RLFW"}
+    },
+    default = "GLFW"
+}
+
+newoption
+{
+    trigger = "wayland",
+    value = "WAYLAND",
+    description = "build for wayland",
+    allowed = {
+        { "off", "Off"},
+        { "on", "On"}
+    },
+    default = "off"
+}
 function string.starts(String,Start)
     return string.sub(String,1,string.len(Start))==Start
 end
@@ -61,6 +71,61 @@ function check_raylib()
         zip.extract("raylib-master.zip", os.getcwd())
         os.remove("raylib-master.zip")
     end
+end
+
+function use_library(libraryName, githubFolder, repoHead)
+    libFolder = libraryName .. "-" .. repoHead
+    zipFile = libFolder .. ".zip"
+
+    baseName = path.getbasename(os.getcwd());
+
+    links(libraryName);
+    includedirs {"../" .. libFolder .. "/" }
+    includedirs {"../" .. libFolder .."/src/" }
+    includedirs {"../" .. libFolder .."/include/" }
+    
+
+    os.chdir("..")
+    
+    if(os.isdir(libFolder) == false) then
+        if(not os.isfile(zipFile)) then
+            print(libraryName .. " not found, downloading from github")
+            local result_str, response_code = http.download("https://github.com/" .. githubFolder .. "/archive/refs/heads/" .. repoHead ..".zip", zipFile, {
+                progress = download_progress,
+                headers = { "From: Premake", "Referer: Premake" }
+            })
+        end
+        print("Unzipping to " ..  os.getcwd())
+        zip.extract(zipFile, os.getcwd())
+        os.remove(zipFile)
+    end
+
+    os.chdir(libFolder)
+    
+    project (libraryName)
+        kind "StaticLib"
+        location "./"
+        targetdir "../bin/%{cfg.buildcfg}"
+
+        filter "action:vs*"
+            buildoptions { "/experimental:c11atomics" }
+
+        vpaths 
+        {
+            ["Header Files/*"] = { "include/**.h", "include/**.hpp",  "**.h", "**.hpp"},
+            ["Source Files/*"] = { "src/**.cpp", "src/**.c", "**.cpp",  "**.c"},
+        }
+        files {"include/**.hpp", "include/**.h","src/**.hpp", "src/**.h", "src/**.cpp", "src/**.c"}
+
+        includedirs { "./" }
+        includedirs { "./src" }
+        includedirs { "./include" }
+
+    os.chdir(baseName)
+end
+
+function use_Box2dV3()
+    use_library("box2d", "erincatto/box2d", "main")
 end
 
 workspaceName = path.getbasename(os.getcwd())
@@ -95,13 +160,19 @@ workspace (workspaceName)
 
     targetdir "bin/%{cfg.buildcfg}/"
 
-    startproject("example")
+    if(os.isdir("game")) then
+        startproject(workspaceName)
+    end
 
-cdialect "C99"
-cppdialect "C++17"
+cdialect "C17"
+cppdialect "C++20"
 check_raylib();
 
 include ("raylib_premake5.lua")
+
+if(os.isdir("game")) then
+    include ("game")
+end
 
 folders = os.matchdirs("*")
 for _, folderName in ipairs(folders) do

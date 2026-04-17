@@ -77,7 +77,7 @@ namespace RayTiled
         int xDirection = 1;
         int yDirection = 1;
 
-        if (camera)
+        if (camera && tileLayer->Orientation == TileMapOrientation::Orthogonal)
         {
             if (bounds.x <= 0 || bounds.y <= 0)
             {

@@ -257,10 +257,36 @@ namespace RayTiled
         if (x > Bounds.x || x < 0 || y > Bounds.y || y < 0)
             return nullptr;
 
-        screenRect.x = x * TileSize.x;
-        screenRect.y = y * TileSize.y;
         screenRect.width = TileSize.x;
         screenRect.height = TileSize.y;
+
+        float halfWidth = TileSize.x * 0.5f;
+        float halfHeight = TileSize.y * 0.5f;
+        float quarterHeight = TileSize.y * 0.25f;
+
+        switch (Orientation)
+        {
+            case TileMapOrientation::Orthogonal:
+                screenRect.x = x * TileSize.x;
+                screenRect.y = y * TileSize.y;
+                break;
+            case TileMapOrientation::Isometric:
+                screenRect.x = (x - y) * halfWidth;
+                screenRect.y = (x + y) * quarterHeight;
+                break;
+            case TileMapOrientation::Staggered:
+                screenRect.x = x * halfWidth;
+                screenRect.y = y * halfHeight + (x % 2) * quarterHeight;
+                break;
+            case TileMapOrientation::Oblique:
+                screenRect.x = x * halfWidth;
+                screenRect.y = y * halfHeight;
+                break;
+            case TileMapOrientation::Hexagonal:
+                screenRect.x = x * halfWidth;
+                screenRect.y = y * TileSize.y + (x % 2) * quarterHeight;
+                break;
+        }
 
         return &TileData[y * int(Bounds.x) + x];
     }

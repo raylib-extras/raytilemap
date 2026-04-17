@@ -39,6 +39,15 @@
 
 namespace RayTiled
 {
+    enum class TileMapOrientation
+    {
+        Orthogonal,
+        Isometric,
+        Staggered,
+        Hexagonal,
+        Oblique,
+    };
+
     // defines a texture and it's associated tile rects that are used by a tilemap
     struct TileSheet
     {
@@ -91,9 +100,10 @@ namespace RayTiled
     // A layer made up of tile elements
     struct TileLayer : public LayerInfo
     {
-        Vector2 Bounds = { 0 };						// the grid size of the layer
-        Vector2 TileSize = { 0 };					// the size of one tile element in the grid
-        std::vector<TileInfo> TileData;				// the actual tile instances
+        Vector2 Bounds = { 0 };						                        // the grid size of the layer
+        Vector2 TileSize = { 0 };					                        // the size of one tile element in the grid
+        std::vector<TileInfo> TileData;				                        // the actual tile instances
+        TileMapOrientation Orientation = TileMapOrientation::Orthogonal;	// the map orientation, used to determine how to draw the tiles
 
         void* UserData = nullptr;
 
@@ -196,6 +206,8 @@ namespace RayTiled
     {
         std::map<uint16_t, TileSheet> TileSheets;		// the sheets used by this map
         std::vector<std::unique_ptr<LayerInfo>> Layers;	// the layers stored in draw order (back to front)
+
+        TileMapOrientation Orientation = TileMapOrientation::Orthogonal;	// the map orientation, used to determine how to draw the tiles
 
         Vector2 TileRenderOrder = { 1,1 };
 

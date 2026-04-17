@@ -298,8 +298,32 @@ namespace RayTiled
 		std::string orient = root.attribute("orientation").as_string();
 		std::string renderorder = root.attribute("renderorder").as_string();
 
-		if (orient != "orthogonal")
-			return false;
+		if (orient == "orthogonal")
+			map.Orientation = TileMapOrientation::Orthogonal;
+		else if (orient == "isometric")
+			map.Orientation = TileMapOrientation::Isometric;
+		else if (orient == "staggered")
+			map.Orientation = TileMapOrientation::Staggered;
+		else if (orient == "hexagonal")
+			map.Orientation = TileMapOrientation::Hexagonal;
+		else if (orient == "oblique")
+			map.Orientation = TileMapOrientation::Oblique;
+		else
+            return false; // unknown orientation
+		
+		if (map.Orientation == TileMapOrientation::Orthogonal)
+		{
+			if (renderorder == "right-down")
+				map.TileRenderOrder = { 1,1 };
+			else if (renderorder == "right-up")
+				map.TileRenderOrder = { 1,-1 };
+			else if (renderorder == "left-down")
+				map.TileRenderOrder = { -1,1 };
+			else if (renderorder == "left-up")
+				map.TileRenderOrder = { -1,-1 };
+			else
+				return false; // unknown render order
+		}
 
 		int width = root.attribute("width").as_int();
 		int height = root.attribute("height").as_int();
@@ -365,6 +389,8 @@ namespace RayTiled
 				layer->Bounds.y = float(height);
 				layer->TileSize.x = float(tilewidth);
 				layer->TileSize.y = float(tileheight);
+
+                layer->Orientation = map.Orientation;
 
 				auto data = child.child("data");
 				std::string encoding = data.attribute("encoding").as_string();
