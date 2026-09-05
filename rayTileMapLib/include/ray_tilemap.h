@@ -127,9 +127,9 @@ namespace RayTiled
             void* UserData = nullptr;
         };
 
-        using DawableFunction = std::function<void(TileLayer& layer, Drawable& drawable, float startX, float endX)>;
+        using DrawableFunction = std::function<void(TileLayer& layer, Drawable& drawable, float startX, float endX)>;
 
-        DawableFunction CustomDrawalbeFunction = nullptr;
+        DrawableFunction CustomDrawableFunction = nullptr;
 
         std::vector<Drawable*> Drawables;
 

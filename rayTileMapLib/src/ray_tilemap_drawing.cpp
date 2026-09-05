@@ -115,13 +115,13 @@ namespace RayTiled
                 TilesDrawn++;
             }
             
-            if (tileLayer->CustomDrawalbeFunction)
+            if (tileLayer->CustomDrawableFunction)
             {
                 for (auto& drawable : tileLayer->Drawables)
                 {
                     float yPos = drawable->GetY();
                     if (yPos > y * tileLayer->TileSize.y && yPos <= (y + 1) * tileLayer->TileSize.y)
-                        tileLayer->CustomDrawalbeFunction(*tileLayer, *drawable, startX * tileLayer->TileSize.x, endX * tileLayer->TileSize.x);
+                        tileLayer->CustomDrawableFunction(*tileLayer, *drawable, startX * tileLayer->TileSize.x, endX * tileLayer->TileSize.x);
                 }
             }
         }

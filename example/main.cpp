@@ -100,7 +100,7 @@ void GameInit()
 	{
 		ObjectTileLayer = static_cast<TileLayer*>(playerLayer);
 
-		ObjectTileLayer->CustomDrawalbeFunction = DrawObjectLayerItem;
+		ObjectTileLayer->CustomDrawableFunction = DrawObjectLayerItem;
 		ObjectTileLayer->AddDrawable(&Player);
 	}
 
